@@ -27,7 +27,7 @@ struct Node {
     }
 };
 
-// Function to find a path from start to goal on the grid
+// Function to find a path from start to goal on the grid,
 vector<Point> findPath(Point start, Point goal, vector<vector<int>>& grid) {
     // Priority queue to traverse nodes based on the lowest cost
     auto cmp = [](Node* left, Node* right) { return left->getF() > right->getF(); };
