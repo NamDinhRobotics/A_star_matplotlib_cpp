@@ -1,7 +1,11 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.0)
 project(Astar)
 
 set(CMAKE_CXX_STANDARD 17)
+
+# find eigen
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 # Library target
 add_library(matplotlib_cpp INTERFACE)
@@ -31,6 +35,20 @@ endif()
 add_executable(astar main.cpp)
 target_link_libraries(astar PRIVATE matplotlib_cpp)
 
+add_executable(planner planner.cpp)
+target_link_libraries(planner PRIVATE matplotlib_cpp)
+
+add_executable(path_planner path_planner.cpp)
+target_link_libraries(path_planner PRIVATE matplotlib_cpp)
+
+add_executable(planner_plot planner_plot.cpp)
+target_link_libraries(planner_plot PRIVATE matplotlib_cpp)
+
+add_executable(planner_method planner_method.cpp)
+target_link_libraries(planner_method PRIVATE matplotlib_cpp)
+
+add_executable(test_trajxy test_trajxy.cpp)
+target_link_libraries(test_trajxy PRIVATE matplotlib_cpp)
 
 # Examples
 add_executable(minimal examples/minimal.cpp)
