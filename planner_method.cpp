@@ -397,11 +397,12 @@ int main()
     for (size_t i = 0; i < global_path.size() - 30; ++i)
     {
         plt::clf(); // Clear previous plot
+        plt::axis("scaled"); // Set axis to auto for dynamic scaling
 
         // Update vehicle pose to simulate movement along the path
         vehicle_pose.x = std::get<0>(global_path[i]);
-        vehicle_pose.y = std::get<1>(global_path[i]) + 0.3;
-        vehicle_pose.theta = std::get<2>(global_path[i]) + M_PI/12;
+        vehicle_pose.y = std::get<1>(global_path[i]);
+        vehicle_pose.theta = std::get<2>(global_path[i]);
 
         // Use genLocalPathInter to get points with heading
         auto points_with_heading = local_path.genLocalPathInterEqual(vehicle_pose, 20, 0, 10, 0.3);
@@ -436,6 +437,7 @@ int main()
             y_global.push_back(std::get<1>(point));
         }
         plt::plot(x_global, y_global, "b."); // Blue dashed line for global path
+        plt::axis("scaled"); // Set axis to auto for dynamic scaling
 
         // Plot current vehicle position
         plt::plot({vehicle_pose.x}, {vehicle_pose.y}, "yo"); // Yellow circle for vehicle
@@ -446,7 +448,10 @@ int main()
         plt::ylabel("Y");
         plt::grid(true);
 
-        plt::pause(0.5); // Pause for animation effect (adjust for real-time movement)
+        plt::xlim(x_converted[0]-5, x_converted[0]+5);
+        plt::ylim(y_converted[0]-5, y_converted[0]+5);
+
+        plt::pause(0.1); // Pause for animation effect (adjust for real-time movement)
     }
 
     plt::show(); // Final plot
