@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.2)
 project(Astar)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 
 # find eigen
 find_package(Eigen3 REQUIRED)
@@ -14,7 +14,7 @@ target_include_directories(matplotlib_cpp
         include
 )
 target_compile_features(matplotlib_cpp INTERFACE
-        cxx_std_17
+        cxx_std_11
 )
 # TODO: Use `Development.Embed` component when requiring cmake >= 3.18
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)

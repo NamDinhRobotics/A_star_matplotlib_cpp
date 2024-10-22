@@ -48,8 +48,8 @@ public:
             const double dy = gy - vehicle_pose_.y;
 
             // Ensure the waypoint is ahead of the vehicle
-            if (const double dis = sqrt(dx * dx + dy * dy); dis < min_distance && dx * cos(vehicle_pose_.theta) + dy *
-                sin(vehicle_pose_.theta) > 0)
+            const double dis = sqrt(dx * dx + dy * dy);
+            if ( dis < min_distance && dx * cos(vehicle_pose_.theta) + dy *sin(vehicle_pose_.theta) > 0)
             {
                 min_distance = dis;
                 vehicle_index_ = i;
