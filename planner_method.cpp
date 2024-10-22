@@ -273,8 +273,10 @@ public:
             points_with_heading.emplace_back(x, y, theta);
             x += step;
         }
-        //chance the first point to ego point (0,0,0)
-        points_with_heading[0] = std::make_tuple(0, 0, 0);
+        //only chance the first point (0,0, heading)
+        //save the first heading
+        double heading = std::get<2>(points_with_heading[0]);
+        points_with_heading[0] = std::make_tuple(0, 0, heading);
         return points_with_heading;
     }
 
@@ -303,6 +305,40 @@ public:
         // Generate points with heading using the internally computed coefficients
         return generatePointsWithHeading(coefficients, start_x, num_points, step);
     }
+
+    //method localPathInterEqual
+    std::vector<std::tuple<double, double, double>> genLocalPathInterEqual(const Pose& vehicle_pose,
+                                                                          const int num_poses_ahead = 20,
+                                                                          const double start_x = 0.0,
+                                                                          const int num_points = 15,
+                                                                          const double step = 0.3)
+    {
+        double small_step = 0.01;
+        //number point dense static_cast
+        int num_points_dense = static_cast<int>(num_points * step/small_step);
+        auto all_points = genLocalPathInter(vehicle_pose, num_poses_ahead, start_x, num_points_dense, small_step);
+        //check and select the point from all_points with distance equal step
+        std::vector<std::tuple<double, double, double>> points_with_heading;
+        points_with_heading.push_back(all_points[0]);
+        double distance = 0;
+        for (int i = 1; i < all_points.size(); i++)
+        {
+            double x1 = std::get<0>(all_points[i]);
+            double y1 = std::get<1>(all_points[i]);
+            double x0 = std::get<0>(points_with_heading.back());
+            double y0 = std::get<1>(points_with_heading.back());
+            distance = sqrt(pow(x1 - x0, 2) + pow(y1 - y0, 2));
+            if (distance >= step)
+            {
+                points_with_heading.push_back(all_points[i]);
+                distance = 0;
+            }
+        }
+        return points_with_heading;
+
+    }
+
+
 
 private:
     std::vector<std::tuple<double, double, double>> global_path_; // Global path (x, y, theta)
@@ -364,11 +400,12 @@ int main()
 
         // Update vehicle pose to simulate movement along the path
         vehicle_pose.x = std::get<0>(global_path[i]);
-        vehicle_pose.y = std::get<1>(global_path[i]);
-        vehicle_pose.theta = std::get<2>(global_path[i]);
+        vehicle_pose.y = std::get<1>(global_path[i]) + 0.3;
+        vehicle_pose.theta = std::get<2>(global_path[i]) + M_PI/12;
 
         // Use genLocalPathInter to get points with heading
-        auto points_with_heading = local_path.genLocalPathInter(vehicle_pose, 20, 0, 10, 0.3);
+        auto points_with_heading = local_path.genLocalPathInterEqual(vehicle_pose, 20, 0, 10, 0.3);
+        //auto points_with_heading = local_path.genLocalPathInter(vehicle_pose, 20, 0, 10, 0.3);
 
         // Convert the generated local path back to global coordinates
         auto global_path_converted = local_path.convertLocalToGlobal(points_with_heading);
